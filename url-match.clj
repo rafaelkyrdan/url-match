@@ -59,6 +59,7 @@
   )
 
 (defn recognize
+  "recognize and destruct URL"
   [patterns input]
   (loop [checks patterns result ()]
     (if (empty? checks)
@@ -75,17 +76,22 @@
 
 (def twitter (new-pattern "host(twitter.com); path(?user/status/?id);"))
 (recognize twitter "http://twitter.com/bradfitz/status/562360748727611392")
-
+; (("bradfitz" "562360748727611392"))
 
 (def dribbble (new-pattern "host(dribbble.com); path(shots/?id); queryparam(offset=?offset);"))
 (recognize dribbble "https://dribbble.com/shots/1905065-Travel-Icons-pack?list=users&offset=1")
+; (("1905065-Travel-Icons-pack") ("1"))
 
 (recognize dribbble "https://twitter.com/shots/1905065-Travel-Icons-pack?list=users&offset=1")
+; nil ;; host mismatch
 
 (recognize dribbble "https://dribbble.com/shots/1905065-Travel-Icons-pack?list=users")
-
+; nil ;; offset queryparam missing
 
 (def dribbble2 (new-pattern "host(dribbble.com); path(shots/?id); queryparam(offset=?offset); queryparam(list=?type);"))
+
 (recognize dribbble2 "https://dribbble.com/shots/1905065-Travel-Icons-pack?list=users&offset=1")
+; (("1905065-Travel-Icons-pack") ("1") ("users"))
+
 
 
